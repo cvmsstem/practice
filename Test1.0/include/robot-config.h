@@ -12,17 +12,24 @@ extern motor leftMotorB;
 extern motor rightMotorA;
 extern motor rightMotorB;
 
+extern motor roller;
+extern motor indexer;
+
 extern controller Controller1;
 
 extern motor_group LeftDriveSmart;
 extern motor_group RightDriveSmart;
 
+extern motor_group shooter;
+
 extern smartdrive Drivetrain;
 extern inertial DrivetrainInertial;
 
 extern bumper backBumper;
-extern distance frontkDistance;
+extern distance frontDistance;
 extern distance sideDistance;
+extern optical rollerOptical;
+
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
