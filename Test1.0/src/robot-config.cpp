@@ -26,10 +26,11 @@ motor shooterSetterMotor = motor(PORT6, ratio18_1, false);
 motor shooterMotor1 = motor(PORT7, ratio6_1, true);
 motor shooterMotor2 = motor(PORT8, ratio6_1, false);
 motor_group shooter = motor_group(shooterMotor1, shooterMotor2);
-motor roller = motor(PORT9, ratio6_1, true);
+motor roller = motor(PORT9, ratio18_1, true);
+motor indexer = motor(PORT10, ratio18_1, true);
 
 bumper backBumper = bumper(Brain.ThreeWirePort.B);
-distance frontkDistance = distance(PORT10);
+distance frontDistance = distance(PORT10);
 optical rollerOptical = optical(PORT11);
 
 // VEXcode generated functions
@@ -220,17 +221,19 @@ int checkTemperature() {
   while (true) {
     Brain.Screen.clearScreen();
 
-    checkMotor(leftMotorA, "Left motor A", 1);
+    checkMotor(leftMotorA, "Left A", 1);
 
-    checkMotor(leftMotorB, "Left motor B", 3);
+    checkMotor(leftMotorB, "Left B", 3);
 
-    checkMotor(rightMotorA, "right motor A", 5);
+    checkMotor(rightMotorA, "right A", 5);
 
-    checkMotor(rightMotorB, "right motor B", 7);
+    checkMotor(rightMotorB, "right B", 7);
 
-    checkMotor(shooterMotor1, "shooter motor 1", 9);
+    checkMotor(shooterMotor1, "shooter1", 9);
 
-    checkMotor(shooterMotor2, "shooter motor 2", 11);
+    checkMotor(shooterMotor2, "shooter2", 11);
+
+    checkMotor(roller, "roller", 12);
 
     wait(500, msec);
   }

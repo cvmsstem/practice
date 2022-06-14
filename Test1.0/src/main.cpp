@@ -9,6 +9,34 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
+bool flying = false;
+
+void toggleFlying() {
+  if (!flying) {
+    // shooter.spin(forward, 400, rpm);
+  } else {
+    shooter.stop(coast);
+  }
+  flying = !flying;
+}
+
+void triggerIndex() {
+  indexer.spinTo(90, degrees);
+  wait(500, msec);
+  indexer.spinTo(0, degrees);
+}
+
+bool rolling = false;
+
+void toggleRoller() {
+  if (!rolling) {
+    roller.spin(forward, 20, percent);
+  } else {
+    roller.stop();
+  }
+  rolling = !rolling;
+}
+
 /* bool backHookOn = false;
 void toggleBackHook() {
   if (backHookOn) {
@@ -146,12 +174,12 @@ void menu() {
 
     Brain.Screen.setFillColor(green);
     Brain.Screen.drawRectangle(180, 40, 120, 140);
-        Brain.Screen.setPenColor(black);
+    Brain.Screen.setPenColor(black);
     Brain.Screen.printAt(190, 70, false, "%s", txt[auton].c_str());
 
     Brain.Screen.setFillColor(program_color);
     Brain.Screen.drawRectangle(340, 40, 120, 140);
-        Brain.Screen.setPenColor(white);
+    Brain.Screen.setPenColor(white);
     Brain.Screen.printAt(350, 70, false, "Next");
 
     while (!(Brain.Screen.pressing())) {
@@ -178,6 +206,7 @@ void menu() {
 
 void setupRobot() {
   resetMotors();
+  roller.setBrake(brake);
   /* arm.setBrake(hold);
    arm.setTimeout(3, seconds);
    backHookMotor.setBrake(hold);
@@ -204,7 +233,21 @@ void awpMiddle() {
 */
 void solo_easy(){};
 void solo_hard(){};
-void roller_easy(){};
+void roller_easy() {
+  slideFor(2);
+  toggleRoller();
+  wait(1500, msec);
+  toggleRoller();
+  slideFor(-2);
+  Drivetrain.turnFor(-10, degrees);
+  toggleFlying();
+  wait(3000, msec);
+  triggerIndex();
+  wait(2000,msec);
+  triggerIndex();
+  wait(1500, msec);
+  toggleFlying();
+};
 void roller_hard(){};
 
 void autonomous(void) {
@@ -259,6 +302,9 @@ void usercontrol(void) {
   Controller1.ButtonRight.pressed(turnEast);
   Controller1.ButtonUp.pressed(turnNorth);
   Controller1.ButtonDown.pressed(turnSouth);
+  Controller1.ButtonB.pressed(toggleRoller);
+  Controller1.ButtonA.pressed(toggleFlying);
+  Controller1.ButtonX.pressed(triggerIndex);
 
   Controller1.rumble(".");
 
