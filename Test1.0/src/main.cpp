@@ -12,12 +12,17 @@ competition Competition;
 
 void toggleFlying() {
   shooter.spin(forward, 10, voltageUnits::volt);
-  while (fabs(shooter.velocity(rpm)) < 200) {
-    wait(50, msec);
+  while (fabs(shooter.velocity(rpm)) < 380) {
+    wait(10, msec);
   }
-  indexer.rotateTo(90, degrees);
-  wait(200, msec);
-  indexer.rotateTo(0, degrees);
+  indexer.spinTo(90, degrees, 10, velocityUnits::pct);
+ // wait(150, msec);
+  indexer.spinTo(0, degrees, 100, velocityUnits::pct);
+  while (fabs(shooter.velocity(rpm)) < 380) {
+    wait(10, msec);
+  }
+  indexer.spinTo(90, degrees);
+  indexer.spinTo(0, degrees);
   shooter.stop(coast);
 }
 
@@ -32,11 +37,11 @@ void toggleFeeding() {
   isFeeding = !isFeeding;
 }
 
-void toggleRoller() {
+/* void toggleRoller() {
   roller.spin(forward, 20, percent);
   waitUntil(!Controller1.ButtonB.pressing());
   roller.stop(brake);
-}
+} */
 
 const int program_color = red;
 
@@ -178,7 +183,7 @@ void autonomous(void) {
 }
 
 bool armMotorStopped = true;
-bool topHookMotorStopped = true;
+bool rollerMotorStopped = true;
 
 void usercontrol(void) {
 
@@ -188,51 +193,52 @@ void usercontrol(void) {
   Controller1.ButtonRight.pressed(turnEast);
   Controller1.ButtonUp.pressed(turnNorth);
   Controller1.ButtonDown.pressed(turnSouth);
-  Controller1.ButtonB.pressed(toggleRoller);
   Controller1.ButtonA.pressed(toggleFlying);
-  Controller1.ButtonX.pressed(toggleFeeding);
+  Controller1.ButtonB.pressed(toggleFeeding);
 
   Controller1.rumble(".");
 
   // opticalRoller();
 
   // Drivetrain.setStopping(hold);
-  /* while (true) {
+  while (true) {
 
-     // check the ButtonR1/ButtonR2 status to control arm
-     if (Controller1.ButtonR1.pressing()) {
-       double angle = arm.position(degrees);
-       if (angle > 5) {
-         arm.spin(reverse);
-         armMotorStopped = false;
-       } else if (!armMotorStopped) {
-         arm.stop();
-         armMotorStopped = true;
-       }
-     } else if (Controller1.ButtonR2.pressing()) {
-       double angle = arm.position(degrees);
-       if (angle < 200) {
-         arm.spin(forward);
-         armMotorStopped = false;
-       } else if (!armMotorStopped) {
-         arm.stop();
-         armMotorStopped = true;
-       }
+    // check the ButtonR1/ButtonR2 status to control arm
+    /*if (Controller1.ButtonR1.pressing()) {
+      double angle = arm.position(degrees);
+      if (angle > 5) {
+        arm.spin(reverse);
+        armMotorStopped = false;
+      } else if (!armMotorStopped) {
+        arm.stop();
+        armMotorStopped = true;
+      }
+    } else if (Controller1.ButtonR2.pressing()) {
+      double angle = arm.position(degrees);
+      if (angle < 200) {
+        arm.spin(forward);
+        armMotorStopped = false;
+      } else if (!armMotorStopped) {
+        arm.stop();
+        armMotorStopped = true;
+      }
 
-     } else if (!armMotorStopped) {
-       arm.stop();
-       armMotorStopped = true;
-     }
+    } else if (!armMotorStopped) {
+      arm.stop();
+      armMotorStopped = true;
+    } */
+    
 
-     if (Controller1.ButtonX.pressing()) {
-       topHookMotor.spin(forward);
-       topHookMotorStopped = false;
-     } else if (!topHookMotorStopped) {
-       topHookMotor.stop();
-       topHookMotorStopped = true;
-     }
-     wait(20, msec);
-   }*/
+
+    if (Controller1.ButtonX.pressing()) {
+      roller.spin(forward, 20, percent);
+      rollerMotorStopped = false;
+    } else if (!rollerMotorStopped) {
+      roller.stop();
+      rollerMotorStopped = true;
+    }
+    wait(20, msec);
+  }
 }
 
 void pre_auton(void) {

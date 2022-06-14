@@ -13,10 +13,10 @@ brain Brain;
 // VEXcode device constructors
 controller Controller1 = controller(primary);
 motor leftMotorA = motor(PORT1, ratio18_1, false);
-motor leftMotorB = motor(PORT2, ratio18_1, false);
+motor leftMotorB = motor(PORT11, ratio18_1, false);
 motor_group LeftDriveSmart = motor_group(leftMotorA, leftMotorB);
-motor rightMotorA = motor(PORT3, ratio18_1, true);
-motor rightMotorB = motor(PORT4, ratio18_1, true);
+motor rightMotorA = motor(PORT10, ratio18_1, true);
+motor rightMotorB = motor(PORT20, ratio18_1, true);
 motor_group RightDriveSmart = motor_group(rightMotorA, rightMotorB);
 inertial DrivetrainInertial = inertial(PORT5);
 smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart,
@@ -25,15 +25,15 @@ smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart,
 
 
 motor shooterSetterMotor = motor(PORT6, ratio18_1, false);
-motor shooterMotor1 = motor(PORT7, ratio18_1, true); //change back to 6:1
-motor shooterMotor2 = motor(PORT8, ratio18_1, false); //change back to 6:1
+motor shooterMotor1 = motor(PORT16, ratio6_1, false); 
+motor shooterMotor2 = motor(PORT15, ratio6_1, true); 
 motor_group shooter = motor_group(shooterMotor1, shooterMotor2);
 motor roller = motor(PORT9, ratio18_1, true);
-motor indexer = motor(PORT10, ratio18_1, true);
+motor indexer = motor(PORT8, ratio18_1, false);
 
-bumper backBumper = bumper(Brain.ThreeWirePort.B);
-distance frontDistance = distance(PORT10);
-optical rollerOptical = optical(PORT11);
+//bumper backBumper = bumper(Brain.ThreeWirePort.B);
+//distance frontDistance = distance(PORT10);
+optical rollerOptical = optical(PORT7);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
