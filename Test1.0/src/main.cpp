@@ -11,17 +11,18 @@ using namespace vex;
 competition Competition;
 
 void toggleFlying() {
+  int targetV = 350;
   shooter.spin(forward, 10, voltageUnits::volt);
-  while (fabs(shooter.velocity(rpm)) < 380) {
+  while (fabs(shooter.velocity(rpm)) < targetV) {
     wait(10, msec);
   }
-  indexer.spinTo(90, degrees, 10, velocityUnits::pct);
+  indexer.spinTo(90, degrees, 20, velocityUnits::pct);
  // wait(150, msec);
   indexer.spinTo(0, degrees, 100, velocityUnits::pct);
-  while (fabs(shooter.velocity(rpm)) < 380) {
+  while (fabs(shooter.velocity(rpm)) < targetV) {
     wait(10, msec);
   }
-  indexer.spinTo(90, degrees);
+  indexer.spinTo(90, degrees,  20, velocityUnits::pct);
   indexer.spinTo(0, degrees);
   shooter.stop(coast);
 }
@@ -47,6 +48,7 @@ const int program_color = red;
 
 void opticalRoller() {
   roller.spin(forward, 20, percent);
+
   waitUntil(rollerOptical.isNearObject() && rollerOptical.color() == red);
   roller.stop(brake);
 }
@@ -195,6 +197,8 @@ void usercontrol(void) {
   Controller1.ButtonDown.pressed(turnSouth);
   Controller1.ButtonA.pressed(toggleFlying);
   Controller1.ButtonB.pressed(toggleFeeding);
+
+  Controller1.ButtonY.pressed(opticalRoller);
 
   Controller1.rumble(".");
 
