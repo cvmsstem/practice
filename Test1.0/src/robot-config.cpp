@@ -22,9 +22,11 @@ inertial DrivetrainInertial = inertial(PORT5);
 smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart,
                                    DrivetrainInertial, 319.19, 320, 40, mm, 1);
 
+
+
 motor shooterSetterMotor = motor(PORT6, ratio18_1, false);
-motor shooterMotor1 = motor(PORT7, ratio6_1, true);
-motor shooterMotor2 = motor(PORT8, ratio6_1, false);
+motor shooterMotor1 = motor(PORT7, ratio18_1, true); //change back to 6:1
+motor shooterMotor2 = motor(PORT8, ratio18_1, false); //change back to 6:1
 motor_group shooter = motor_group(shooterMotor1, shooterMotor2);
 motor roller = motor(PORT9, ratio18_1, true);
 motor indexer = motor(PORT10, ratio18_1, true);

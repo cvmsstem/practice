@@ -1,4 +1,5 @@
 #include "vex.h"
+#include <cmath>
 #include <string>
 
 using namespace vex;
@@ -9,44 +10,43 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
-bool flying = false;
-
 void toggleFlying() {
-  if (!flying) {
-    // shooter.spin(forward, 400, rpm);
-  } else {
-    shooter.stop(coast);
+  shooter.spin(forward, 10, voltageUnits::volt);
+  while (fabs(shooter.velocity(rpm)) < 200) {
+    wait(50, msec);
   }
-  flying = !flying;
+  indexer.rotateTo(90, degrees);
+  wait(200, msec);
+  indexer.rotateTo(0, degrees);
+  shooter.stop(coast);
 }
 
-void triggerIndex() {
-  indexer.spinTo(90, degrees);
-  wait(500, msec);
-  indexer.spinTo(0, degrees);
-}
+bool isFeeding = false;
 
-bool rolling = false;
+void toggleFeeding() {
+  if (!isFeeding) {
+    roller.spin(forward, 100, percent);
+  } else {
+    roller.stop(coast);
+  }
+  isFeeding = !isFeeding;
+}
 
 void toggleRoller() {
-  if (!rolling) {
-    roller.spin(forward, 20, percent);
-  } else {
-    roller.stop();
-  }
-  rolling = !rolling;
+  roller.spin(forward, 20, percent);
+  waitUntil(!Controller1.ButtonB.pressing());
+  roller.stop(brake);
 }
 
-/* bool backHookOn = false;
-void toggleBackHook() {
-  if (backHookOn) {
-    backHookMotor.rotateTo(0, degrees);
-    backHookOn = false;
-  } else {
-    backHookMotor.rotateTo(85, degrees);
-    backHookOn = true;
-  }
+const int program_color = red;
+
+void opticalRoller() {
+  roller.spin(forward, 20, percent);
+  waitUntil(rollerOptical.isNearObject() && rollerOptical.color() == red);
+  roller.stop(brake);
 }
+
+/*
 
 void onBackBumperPressed() {
   if (!backHookOn) {
@@ -61,22 +61,9 @@ void resetMotors() {
   leftMotorB.resetPosition();
   rightMotorA.resetPosition();
   rightMotorB.resetPosition();
-  /*arm.setRotation(0, degrees);
-  backHookMotor.setRotation(0, degrees);
-  topHookMotor.setRotation(0, degrees);
-*/
+  indexer.setRotation(0, degrees);
 }
 /*
-void dump2Rings(int pause = DUMPING_PAUSE) {
-  arm.spinToPosition(DUMPING_ANGLE, degrees, 25, velocityUnits::pct);
-  wait(pause, msec);
-}
-
-void pickupRings() {
-  topHookMotor.spinToPosition(-180, degrees, 100, velocityUnits::pct);
-  arm.spinToPosition(0, degrees, 20, velocityUnits::pct);
-  topHookMotor.spinToPosition(0, degrees, 25, velocityUnits::pct);
-}
 
 void dumpRings(int count, int pause = DUMPING_PAUSE) {
   double d = frontkDistance.objectDistance(inches);
@@ -100,66 +87,13 @@ void driveBackHook(double distance, double speed, bool try_on = true) {
     toggleBackHook();
 }
 
-void getMogoBack(double distanceTo, double speedTo, double distanceBack,
-                 double speedBack, bool try_on = false) {
-  driveBackHook(distanceTo, speedTo, try_on);
-  wait(200, msec);
-
-  if (backHookOn) {
-    Drivetrain.driveFor(forward, distanceBack, inches, speedBack,
-                        velocityUnits::pct);
-  } else {
-    getMogoBack(3, 30, distanceBack, speedBack, true);
-  }
-}
-
-void dumpRingBack(double distance, int speed = 75) {
-  arm.spinToPosition(33, degrees, 15, velocityUnits::pct);
-  driveBackHook(15, 30);
-  Drivetrain.driveFor(forward, distance, inches, speed, velocityUnits::pct);
-  // if (backHookOn) toggleBackHook();
-  topHookMotor.spinToPosition(220, degrees, 30, velocityUnits::pct);
-  wait(0.5, seconds);
-  arm.spinToPosition(45, degrees, 50, velocityUnits::pct);
-}
-
-void seesawRings() {
-  Drivetrain.setHeading(90, degrees);
-  dumpRings(5);
-  arm.spinToPosition(45, degrees, 50, velocityUnits::pct);
-}
 
 void solo() {
   Drivetrain.setHeading(270, degrees);
-  arm.spinToPosition(30, degrees, 20, velocityUnits::pct, false);
-
-  topHookMotor.spinToPosition(90, degrees, 15, velocityUnits::pct);
-  wait(1, seconds);
-  topHookMotor.spinToPosition(0, degrees, 20, velocityUnits::pct);
-
-  double d = sideDistance.objectDistance(inches);
-  slideFor(28 - d, 40);
-  Drivetrain.driveFor(reverse, 87, inches, 50, velocityUnits::pct);
-
-  dumpRingBack(20);
-  turnWest();
-  arm.spinToPosition(90, degrees, 40, velocityUnits::pct, false);
-  Drivetrain.driveFor(forward, 40, inches, 75, velocityUnits::pct);
 }
 
-void awpRings() {
-  Drivetrain.setHeading(0, degrees);
-  dumpRings(4);
-  turnSouth();
-  getMogoBack(3, 30, 12, 100, true);
-  turnSouth();
-  if (backHookOn)
-    toggleBackHook();
-}
 */
 int auton = 0;
-
-const int program_color = red;
 
 void menu() {
   std::string txt[] = {"solo easy", "solo hard", "roller easy", "roller hard"};
@@ -207,47 +141,22 @@ void menu() {
 void setupRobot() {
   resetMotors();
   roller.setBrake(brake);
-  /* arm.setBrake(hold);
+  /*
+  arm.setBrake(hold);
    arm.setTimeout(3, seconds);
-   backHookMotor.setBrake(hold);
-   backHookMotor.setTimeout(3, seconds);
-   topHookMotor.setBrake(hold);
-   topHookMotor.setTimeout(3, seconds);
    backBumper.pressed(onBackBumperPressed);
    */
 }
 
-/*
-void awpMiddle() {
-  Drivetrain.setHeading(180, degrees);
-  Drivetrain.driveFor(reverse, 52, inches, 100, velocityUnits::pct);
-
-  slideFor(30);
-  turnSouth();
-  arm.spinToPosition(45, degrees, 20, velocityUnits::pct, false);
-  Drivetrain.driveFor(forward, 17, inches, 50, velocityUnits::pct);
-  slideFor(12, 30);
-  turnSouth();
-  getMogoBack(7, 30, 30, 50, true);
-}
-*/
 void solo_easy(){};
 void solo_hard(){};
 void roller_easy() {
   slideFor(2);
-  toggleRoller();
-  wait(1500, msec);
-  toggleRoller();
+  opticalRoller();
   slideFor(-2);
   Drivetrain.turnFor(-10, degrees);
   toggleFlying();
-  wait(3000, msec);
-  triggerIndex();
-  wait(2000,msec);
-  triggerIndex();
-  wait(1500, msec);
-  toggleFlying();
-};
+}
 void roller_hard(){};
 
 void autonomous(void) {
@@ -268,21 +177,6 @@ void autonomous(void) {
   }
 }
 
-/*void ringTest() {
-  double d = frontkDistance.objectDistance(inches);
-  Drivetrain.driveFor(forward, d - 3, inches, 20, velocityUnits::pct);
-  pickupRings();
-  dump2Rings(1000);
-}
-
-void armUp() {
-  arm.spinToPosition(135, degrees, 40, velocityUnits::pct, false);
-}
-
-void armDown() {
-  arm.spinToPosition(190, degrees, 40, velocityUnits::pct, false);
-}
-*/
 bool armMotorStopped = true;
 bool topHookMotorStopped = true;
 
@@ -290,23 +184,17 @@ void usercontrol(void) {
 
   Drivetrain.setHeading(90, degrees);
 
-  /*arm.setVelocity(15, percent);
-  arm.spinToPosition(45, degrees, 40, velocityUnits::pct, false);
-  topHookMotor.spinToPosition(-90, degrees, 100, velocityUnits::pct, false);
-
-  Controller1.ButtonB.pressed(toggleBackHook);
-  Controller1.ButtonL1.pressed(armUp);
-  Controller1.ButtonL2.pressed(armDown);
-*/
   Controller1.ButtonLeft.pressed(turnWest);
   Controller1.ButtonRight.pressed(turnEast);
   Controller1.ButtonUp.pressed(turnNorth);
   Controller1.ButtonDown.pressed(turnSouth);
   Controller1.ButtonB.pressed(toggleRoller);
   Controller1.ButtonA.pressed(toggleFlying);
-  Controller1.ButtonX.pressed(triggerIndex);
+  Controller1.ButtonX.pressed(toggleFeeding);
 
   Controller1.rumble(".");
+
+  // opticalRoller();
 
   // Drivetrain.setStopping(hold);
   /* while (true) {
