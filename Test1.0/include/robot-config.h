@@ -26,7 +26,7 @@ extern smartdrive Drivetrain;
 extern inertial DrivetrainInertial;
 
 extern bumper backBumper;
-extern distance frontDistance;
+extern distance backDistance;
 extern distance sideDistance;
 extern optical rollerOptical;
 
