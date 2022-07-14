@@ -164,16 +164,15 @@ void roller_easy() {
   toggleFlying();
 }
 
-// connector cable to screw
+//robot setup: connector cable to screw align
 
 void solo_easy() {
-  wait(3, seconds);
   Drivetrain.setHeading(0, degrees);
   roller_easy();
-  quickTurn(-33, 50);
+  quickTurn(-34, 50);
 
   // Drivetrain.turnFor(-33, degrees, 50, velocityUnits::pct);
-  slideFor(-5, 40);
+  slideFor(-4.8, 40);
 
   Drivetrain.driveFor(-130, inches, 75, velocityUnits::pct);
   wait(800, msec);
@@ -185,13 +184,23 @@ void solo_easy() {
     d = backDistance.objectDistance(inches);
   }
 
-  Drivetrain.driveFor(24 - d, inches, 40, velocityUnits::pct);
-  slideFor(-8, 40, false);
+  Drivetrain.driveFor(23.8 - d, inches, 40, velocityUnits::pct);
+ // turnWest();
+d = sideDistance.objectDistance(inches);
+  slideFor(1.5 - d, 40, false);
   opticalRoller();
 
   //  Drivetrain.turnFor(-45, degrees, 50, velocityUnits::pct);
 };
-void roller_hard(){};
+void roller_hard(){
+  Drivetrain.turnFor(19, degrees, 70, velocityUnits::pct, false);
+  toggleFlying(); 
+   Drivetrain.turnFor(-19, degrees, 70, velocityUnits::pct);
+   Drivetrain.driveFor(-24, inches, 50, velocityUnits::pct);
+   wait(800, msec);
+slideFor(-8.5, 30, false);
+opticalRoller();
+};
 
 void autonomous(void) {
 
@@ -217,6 +226,7 @@ bool rollerMotorStopped = true;
 void usercontrol(void) {
 
   // Drivetrain.setHeading(90, degrees);
+  wait(3, seconds);
 
   Controller1.ButtonLeft.pressed(turnWest);
   Controller1.ButtonRight.pressed(turnEast);
@@ -230,8 +240,8 @@ void usercontrol(void) {
   Controller1.rumble(".");
 
   // roller_easy();
-
-  solo_easy();
+ roller_hard();
+  //solo_easy();
   // Drivetrain.setStopping(hold);
   while (true) {
 

@@ -20,6 +20,7 @@ motor rightMotorB = motor(PORT20, ratio18_1, true);
 motor_group RightDriveSmart = motor_group(rightMotorA, rightMotorB);
 inertial DrivetrainInertial = inertial(PORT8);
 distance backDistance = distance(PORT17);
+distance sideDistance = distance(PORT18);
 smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart,
                                    DrivetrainInertial, 319.19, 320, 40, mm, 1);
 
