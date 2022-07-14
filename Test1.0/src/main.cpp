@@ -10,21 +10,24 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
-void toggleFlying() {
-  int targetV = 350;
-  shooter.spin(forward, 10, voltageUnits::volt);
+int toggleFlying() {
+  int targetV = 400;
+
+  shooter.spin(forward, 9, voltageUnits::volt);
   while (fabs(shooter.velocity(rpm)) < targetV) {
     wait(10, msec);
   }
   indexer.spinTo(90, degrees, 20, velocityUnits::pct);
- // wait(150, msec);
+  // wait(100, msec);
   indexer.spinTo(0, degrees, 100, velocityUnits::pct);
   while (fabs(shooter.velocity(rpm)) < targetV) {
     wait(10, msec);
   }
-  indexer.spinTo(90, degrees,  20, velocityUnits::pct);
+  indexer.spinTo(90, degrees, 20, velocityUnits::pct);
+  // wait(100, msec);
   indexer.spinTo(0, degrees);
   shooter.stop(coast);
+  return 0;
 }
 
 bool isFeeding = false;
@@ -44,7 +47,7 @@ void toggleFeeding() {
   roller.stop(brake);
 } */
 
-const int program_color = red;
+const int program_color = blue;
 
 void opticalRoller() {
   roller.spin(forward, 20, percent);
@@ -75,11 +78,7 @@ void resetMotors() {
 void dumpRings(int count, int pause = DUMPING_PAUSE) {
   double d = frontkDistance.objectDistance(inches);
   Drivetrain.driveFor(forward, d - 3, inches, 20, velocityUnits::pct);
-  dump2Rings(pause);
-  for (int i = 0; i < count - 1; i++) {
-    pickupRings();
-    dump2Rings(pause);
-  }
+
 }
 
 void driveBackHook(double distance, double speed, bool try_on = true) {
@@ -155,15 +154,43 @@ void setupRobot() {
    */
 }
 
-void solo_easy(){};
 void solo_hard(){};
+
 void roller_easy() {
-  slideFor(2);
+  slideFor(-1, 50, false);
   opticalRoller();
-  slideFor(-2);
-  Drivetrain.turnFor(-10, degrees);
+  slideFor(7, 40);
+  Drivetrain.turnFor(-12, degrees, 70, velocityUnits::pct, false);
   toggleFlying();
 }
+
+// connector cable to screw
+
+void solo_easy() {
+  wait(3, seconds);
+  Drivetrain.setHeading(0, degrees);
+  roller_easy();
+  quickTurn(-33, 50);
+
+  // Drivetrain.turnFor(-33, degrees, 50, velocityUnits::pct);
+  slideFor(-5, 40);
+
+  Drivetrain.driveFor(-130, inches, 75, velocityUnits::pct);
+  wait(800, msec);
+  turnWest();
+  // turnWest();
+
+  double d = backDistance.objectDistance(inches);
+  while (d < 25 || d > 40) {
+    d = backDistance.objectDistance(inches);
+  }
+
+  Drivetrain.driveFor(24 - d, inches, 40, velocityUnits::pct);
+  slideFor(-8, 40, false);
+  opticalRoller();
+
+  //  Drivetrain.turnFor(-45, degrees, 50, velocityUnits::pct);
+};
 void roller_hard(){};
 
 void autonomous(void) {
@@ -189,21 +216,22 @@ bool rollerMotorStopped = true;
 
 void usercontrol(void) {
 
-  Drivetrain.setHeading(90, degrees);
+  // Drivetrain.setHeading(90, degrees);
 
   Controller1.ButtonLeft.pressed(turnWest);
   Controller1.ButtonRight.pressed(turnEast);
   Controller1.ButtonUp.pressed(turnNorth);
   Controller1.ButtonDown.pressed(turnSouth);
-  Controller1.ButtonA.pressed(toggleFlying);
+  // Controller1.ButtonA.pressed(toggleFlying);
   Controller1.ButtonB.pressed(toggleFeeding);
 
   Controller1.ButtonY.pressed(opticalRoller);
 
   Controller1.rumble(".");
 
-  // opticalRoller();
+  // roller_easy();
 
+  solo_easy();
   // Drivetrain.setStopping(hold);
   while (true) {
 
@@ -231,8 +259,6 @@ void usercontrol(void) {
       arm.stop();
       armMotorStopped = true;
     } */
-    
-
 
     if (Controller1.ButtonX.pressing()) {
       roller.spin(forward, 20, percent);
@@ -248,9 +274,7 @@ void usercontrol(void) {
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  menu();
-  task checkTemperatureTask(checkTemperature);
-
+  // menu();
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -259,11 +283,12 @@ int main() {
 
   setupRobot();
 
+  // Run the pre-autonomous function.
+
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
 
-  // Run the pre-autonomous function.
   pre_auton();
 
   // Prevent main from exiting with an infinite loop.
