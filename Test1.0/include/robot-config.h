@@ -3,9 +3,6 @@ using namespace vex;
 extern brain Brain;
 
 // VEXcode devices
-extern motor arm;
-extern motor backHookMotor;
-extern motor topHookMotor;
 
 extern motor leftMotorA;
 extern motor leftMotorB;
@@ -25,7 +22,7 @@ extern motor_group shooter;
 extern smartdrive Drivetrain;
 extern inertial DrivetrainInertial;
 
-extern bumper backBumper;
+//extern bumper backBumper;
 extern distance backDistance;
 extern distance sideDistance;
 extern optical rollerOptical;
