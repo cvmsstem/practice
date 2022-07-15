@@ -57,7 +57,7 @@ int setupBand(int position) {
   return bandValue;
 }
 
-bool anyOrientation = false;
+bool anyOrientation = true;
 
 int getOrientation() {
   if (!anyOrientation)
