@@ -26,6 +26,7 @@ void shootDisks(int speed = 400, int voltage = 9) {
 }
 
 void shootStraight() { shootDisks(390, 10); }
+void shootTest() { shootDisks(250, 9); }
 
 void pivotSpin(double d, int s, bool wait_commplete) {
   rightMotorA.spinFor(d, deg, s, velocityUnits::pct, false);
@@ -57,7 +58,7 @@ void opticalRoller() {
   roller.stop(brake);
 }
 
-// robot setup: align to the roller, not touching.
+// robot setup: align to the roller, not touching.  cable to screw align.
 void roller_easy() {
   Drivetrain.setHeading(270, degrees);
   slideFor(-1, 50, false);
@@ -77,28 +78,31 @@ void roller_easy() {
 void roller_hard() {
   Drivetrain.setHeading(180, degrees);
   Drivetrain.turnFor(19, degrees, 70, velocityUnits::pct, false);
-  shootDisks(392, 11);
+  shootDisks(388, 10);
   Drivetrain.turnFor(-19, degrees, 75, velocityUnits::pct);
   Drivetrain.driveFor(-24, inches, 50, velocityUnits::pct);
   wait(500, msec);
   slideFor(-8.5, 40, false);
   opticalRoller();
-  slideFor(5, 50);
-  Drivetrain.driveFor(100, inches, 100, velocityUnits::pct);
-  wait(300, msec);
+  slideFor(6, 50);
+    turnSouth();
+
+  Drivetrain.driveFor(100, inches, 90, velocityUnits::pct);
+  wait(800, msec);
   // read distance
   turnWest();
-  Drivetrain.driveFor(60, inches, 100, velocityUnits::pct);
-  wait(300, msec);
+  double d = backDistance.objectDistance(inches);
+  Drivetrain.driveFor(67 - d, inches, 90, velocityUnits::pct);
+  wait(500, msec);
   turnWest();
 
-  double d = sideDistance.objectDistance(inches);
+  d = sideDistance.objectDistance(inches);
   slideFor(-d, 50);
 };
 
-// robot setup: connector cable to screw align
+// robot setup: align to the roller, not touching.  cable to screw align.
 void solo() {
-  Drivetrain.setHeading(0, degrees);
+  Drivetrain.setHeading(270, degrees);
   roller_easy();
   quickTurn(-34, 50);
   // Drivetrain.turnFor(-33, degrees, 50, velocityUnits::pct);
@@ -124,6 +128,7 @@ bool rollerMotorStopped = true;
 
 void usercontrol(void) {
   wait(3, seconds);
+  Drivetrain.setHeading(270, degrees);
 
   Controller1.ButtonLeft.pressed(turnNorth);
   Controller1.ButtonRight.pressed(turnSouth);
@@ -133,11 +138,12 @@ void usercontrol(void) {
   Controller1.ButtonB.pressed(toggleFeeding);
   Controller1.ButtonY.pressed(shootFeed);
   Controller1.ButtonX.pressed(shootStraight);
+  Controller1.ButtonA.pressed(shootTest);
 
   Controller1.rumble(".");
 
   // roller_easy();
-  roller_hard();
+  //roller_hard();
   // solo_easy();
 
   // Drivetrain.setStopping(hold);
@@ -146,6 +152,11 @@ void usercontrol(void) {
 
     if (Controller1.ButtonR1.pressing()) {
       roller.spin(forward, 20, percent);
+      rollerMotorStopped = false;
+    } 
+
+    else if (Controller1.ButtonR2.pressing()) {
+      roller.spin(reverse, 20, percent);
       rollerMotorStopped = false;
     } else if (!rollerMotorStopped) {
       roller.stop();

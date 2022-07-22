@@ -21,4 +21,6 @@ todo: use side distance sensor to set slide distance.
 problem: the indexer got bend.
 solution: the rubber guide on the side need to be longer to cover the whole length of the shooting ramp.
 
-6. 
+7/15/2022
+field setup: check field perimeter as well as high goal placment
+improvement: make the ring holder taller to hold 3 disks.

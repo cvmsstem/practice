@@ -24,9 +24,6 @@ distance sideDistance = distance(PORT18);
 smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart,
                                    DrivetrainInertial, 319.19, 320, 40, mm, 1);
 
-
-
-motor shooterSetterMotor = motor(PORT6, ratio18_1, false);
 motor shooterMotor1 = motor(PORT16, ratio6_1, false); 
 motor shooterMotor2 = motor(PORT15, ratio6_1, true); 
 motor_group shooter = motor_group(shooterMotor1, shooterMotor2);
@@ -34,7 +31,6 @@ motor roller = motor(PORT9, ratio18_1, false);
 motor indexer = motor(PORT5, ratio18_1, false);
 
 //bumper backBumper = bumper(Brain.ThreeWirePort.B);
-//distance frontDistance = distance(PORT10);
 optical rollerOptical = optical(PORT2);
 
 // VEXcode generated functions
@@ -220,7 +216,7 @@ void checkMotor(vex::motor &m, const char *name, int row) {
   Brain.Screen.print("%s: %dC, %dRPM, %dV", name, t, s, v );
 }
 
-int checkTemperature() {
+int displayMotorInfo() {
 
   while (true) {
     Brain.Screen.clearScreen();
@@ -265,7 +261,7 @@ void vexcodeInit(void) {
   Brain.Screen.clearScreen();
 
   task rc_auto_loop_task_Controller1(rc_auto_loop_function_Controller1);
-  task checkTemperatureTask(checkTemperature);
+  task checkTemperatureTask(displayMotorInfo);
 
   wait(50, msec);
   Controller1.rumble("..");
